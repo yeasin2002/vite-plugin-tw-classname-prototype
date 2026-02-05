@@ -1,5 +1,5 @@
 {
-  "name": "vite-pluggin-tw-classname",
+  "name": "vite-plugin-tw-classname",
   "private": true,
   "scripts": {
     "build": "turbo run build",
