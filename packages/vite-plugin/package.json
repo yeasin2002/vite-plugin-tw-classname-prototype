@@ -1,25 +1,48 @@
 {
-  "name": "tsdown-starter",
-  "type": "module",
-  "version": "0.0.0",
+  "name": "@repo/vite-plugin",
+  "version": "0.1.0",
+  "description": "Vite plugin for transforming tw() calls to static Tailwind classes",
   "private": true,
-  "description": "A simple example library built by tsdown",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./package.json": "./package.json"
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
   },
-  "main": "./dist/index.mjs",
-  "module": "./dist/index.mjs",
-  "types": "./dist/index.d.mts",
   "files": [
     "dist"
   ],
   "scripts": {
-    "build": "tsdown",
-    "dev": "tsdown --watch"
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "lint": "eslint . --max-warnings 0",
+    "check-types": "tsc --noEmit"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "peerDependencies": {
+    "vite": "^5.0.0 || ^6.0.0 || ^7.0.0"
   },
   "devDependencies": {
-    "tsdown": "^0.18.1",
-    "typescript": "^5.9.3"
+    "@types/babel__traverse": "^7.20.6",
+    "@types/node": "^22.15.3",
+    "eslint": "^9.39.1",
+    "tsup": "^8.3.5",
+    "typescript": "5.9.2",
+    "vite": "^7.0.5",
+    "vitest": "^2.1.8"
+  },
+  "dependencies": {
+    "@babel/parser": "^7.26.3",
+    "@babel/traverse": "^7.26.5",
+    "@babel/types": "^7.26.3",
+    "@rollup/pluginutils": "^5.1.4",
+    "magic-string": "^0.30.17"
   }
 }

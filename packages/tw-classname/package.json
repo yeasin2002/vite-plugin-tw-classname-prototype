@@ -1,0 +1,28 @@
+{
+  "name": "tw-classname",
+  "version": "0.1.0",
+  "description": "Type definitions for tw() function - zero runtime overhead",
+  "private": true,
+  "type": "module",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts"
+    }
+  },
+  "files": [
+    "index.d.ts",
+    "README.md"
+  ],
+  "keywords": [
+    "typescript",
+    "types",
+    "tailwind",
+    "tailwindcss",
+    "responsive",
+    "vite"
+  ],
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}
