@@ -9,10 +9,11 @@ Turborepo monorepo using pnpm workspaces:
 ├── apps/                    # Application packages
 │   └── docs/               # Next.js documentation site (example app)
 │
-├── packages/               # Shared packages
+├── tooling/               # Shared packages
 │   ├── eslint-config/     # Shared ESLint configurations
 │   ├── typescript-config/ # Shared TypeScript configurations
-│   └── ui/                # Shared React component library
+├── package/               # Shared packages
+│   ├── [related packages]     
 │
 ├── .kiro/steering/        # AI assistant guidance documents
 ├── turbo.json             # Turborepo task configuration
