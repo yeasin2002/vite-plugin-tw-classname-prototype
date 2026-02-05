@@ -30,7 +30,7 @@ export interface TwClassnameOptions {
 /**
  * Default Tailwind CSS breakpoints
  */
-export const DEFAULT_BREAKPOINTS = ['sm', 'md', 'lg', 'xl', '2xl'] as const;
+export const DEFAULT_BREAKPOINTS = ["sm", "md", "lg", "xl", "2xl"] as const;
 
 /**
  * Responsive classes object type

@@ -8,7 +8,8 @@ Writing responsive Tailwind classes can get verbose and hard to read:
 
 ```tsx
 // Before: Repetitive prefixes
-className="text-base md:text-lg md:px-4 lg:text-xl lg:px-6 xl:text-2xl xl:px-8"
+className =
+  "text-base md:text-lg md:px-4 lg:text-xl lg:px-6 xl:text-2xl xl:px-8";
 ```
 
 With `tw-classname`, group classes by breakpoint for better readability:
@@ -105,6 +106,7 @@ pnpm format
 ## Development Roadmap
 
 ### Phase 1: Core Plugin (Weeks 1-3)
+
 - [ ] Basic Vite plugin skeleton
 - [ ] Regex-based transformation (MVP)
 - [ ] AST-based transformation with Babel
@@ -112,18 +114,21 @@ pnpm format
 - [ ] Unit tests with Vitest
 
 ### Phase 2: Framework Integration (Week 4)
+
 - [ ] React example project
 - [ ] Vue 3 example project
 - [ ] Svelte example project
 - [ ] Integration tests
 
 ### Phase 3: Developer Experience (Week 5)
+
 - [ ] Debug mode and error handling
 - [ ] Performance optimization
 - [ ] Documentation site
 - [ ] Migration guides
 
 ### Phase 4: Release (Week 6)
+
 - [ ] Beta testing
 - [ ] Final polish
 - [ ] npm publication

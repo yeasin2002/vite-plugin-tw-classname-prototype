@@ -16,34 +16,33 @@ Vite plugin for transforming `tw()` calls to static Tailwind CSS classes at buil
 pnpm add -D @repo/vite-plugin
 ```
 
+This single package includes both the Vite plugin and the `tw()` function types.
+
 ## Usage
 
 ### Basic Setup
 
 ```typescript
 // vite.config.ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import twClassname from '@repo/vite-plugin';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import twClassname from "@repo/vite-plugin";
 
 export default defineConfig({
-  plugins: [
-    react(),
-    twClassname(),
-  ],
+  plugins: [react(), twClassname()],
 });
 ```
 
 ### In Your Code
 
 ```typescript
-import { tw } from 'tw-classname';
+import { tw } from '@repo/vite-plugin/tw';
 
 // Development: Clean, organized syntax
 const className = tw("text-base font-normal", {
   md: "text-lg px-4",
   lg: "text-xl px-6",
-  xl: "text-2xl px-8"
+  xl: "text-2xl px-8",
 });
 
 // Production: Compiles to static string
@@ -86,23 +85,23 @@ interface TwClassnameOptions {
 
 ```typescript
 // vite.config.ts
-import { defineConfig } from 'vite';
-import twClassname from '@repo/vite-plugin';
+import { defineConfig } from "vite";
+import twClassname from "@repo/vite-plugin";
 
 export default defineConfig({
   plugins: [
     twClassname({
       // Only process TypeScript files
       include: /\.tsx?$/,
-      
+
       // Exclude test files
       exclude: [/\.test\.tsx?$/, /\.spec\.tsx?$/],
-      
+
       // Add custom breakpoints
-      breakpoints: ['sm', 'md', 'lg', 'xl', '2xl', '3xl'],
-      
+      breakpoints: ["sm", "md", "lg", "xl", "2xl", "3xl"],
+
       // Enable debug logging
-      debug: process.env.NODE_ENV === 'development',
+      debug: process.env.NODE_ENV === "development",
     }),
   ],
 });
@@ -120,7 +119,7 @@ export default defineConfig({
 ### Basic Responsive Classes
 
 ```typescript
-tw("text-base", { md: "text-lg", lg: "text-xl" })
+tw("text-base", { md: "text-lg", lg: "text-xl" });
 // → "text-base md:text-lg lg:text-xl"
 ```
 
@@ -129,15 +128,15 @@ tw("text-base", { md: "text-lg", lg: "text-xl" })
 ```typescript
 tw("flex items-center", {
   md: "justify-between gap-4",
-  lg: "gap-6 p-8"
-})
+  lg: "gap-6 p-8",
+});
 // → "flex items-center md:justify-between md:gap-4 lg:gap-6 lg:p-8"
 ```
 
 ### Only Base Classes
 
 ```typescript
-tw("bg-blue-500 text-white")
+tw("bg-blue-500 text-white");
 // → "bg-blue-500 text-white"
 ```
 
@@ -148,8 +147,8 @@ tw("container mx-auto px-4", {
   sm: "px-6",
   md: "px-8 max-w-4xl",
   lg: "px-12 max-w-6xl",
-  xl: "px-16 max-w-7xl"
-})
+  xl: "px-16 max-w-7xl",
+});
 // → "container mx-auto px-4 sm:px-6 md:px-8 md:max-w-4xl lg:px-12 lg:max-w-6xl xl:px-16 xl:max-w-7xl"
 ```
 

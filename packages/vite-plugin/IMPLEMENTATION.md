@@ -36,6 +36,7 @@ packages/
 ### 1. Plugin Architecture (src/index.ts)
 
 **Key Features:**
+
 - Vite Plugin API with `transform` hook
 - Hook filters for performance (Vite 6.3+)
 - `enforce: 'pre'` to run before other transformations
@@ -43,6 +44,7 @@ packages/
 - Full TypeScript support
 
 **Hook Filter Implementation:**
+
 ```typescript
 transform: {
   filter: {
@@ -58,12 +60,14 @@ transform: {
 ### 2. AST Transformation (src/transform.ts)
 
 **Technology Stack:**
+
 - `@babel/parser` - Parse code to AST
 - `@babel/traverse` - Traverse and analyze AST
 - `magic-string` - Efficient string manipulation
 - Source map generation for debugging
 
 **Transformation Flow:**
+
 1. Parse code to AST with Babel (supports JSX, TypeScript, decorators)
 2. Traverse AST to find `tw()` CallExpression nodes
 3. Extract base classes and responsive object
@@ -72,6 +76,7 @@ transform: {
 6. Generate accurate source maps
 
 **Error Handling:**
+
 - Parse errors reported via plugin context
 - Warnings for invalid arguments
 - Graceful degradation on errors
@@ -79,11 +84,13 @@ transform: {
 ### 3. Parser Utilities (src/parser.ts)
 
 **Functions:**
+
 - `extractStringLiteral()` - Extract string from StringLiteral or TemplateLiteral nodes
 - `extractObjectExpression()` - Extract key-value pairs from ObjectExpression
 - `buildClassString()` - Build final class string with breakpoint prefixes
 
 **Features:**
+
 - Validates breakpoints against configured list
 - Warns about unknown breakpoints
 - Skips empty class strings
@@ -92,6 +99,7 @@ transform: {
 ### 4. Type Definitions (src/types.ts)
 
 **Exports:**
+
 - `TwClassnameOptions` - Plugin configuration interface
 - `DEFAULT_BREAKPOINTS` - Default Tailwind breakpoints
 - `ResponsiveClasses` - Type for responsive classes object
@@ -99,6 +107,7 @@ transform: {
 ### 5. Build Configuration
 
 **tsup.config.ts:**
+
 - Dual format output (ESM + CommonJS)
 - TypeScript declarations (.d.ts)
 - Source maps for debugging
@@ -106,6 +115,7 @@ transform: {
 - Tree-shaking enabled
 
 **Output:**
+
 - `dist/index.js` - ESM bundle (~4.9 KB)
 - `dist/index.cjs` - CommonJS bundle (~5.3 KB)
 - `dist/index.d.ts` - TypeScript declarations
@@ -116,16 +126,20 @@ transform: {
 **Purpose:** Provide TypeScript types for the `tw()` function used in application code.
 
 **Features:**
+
 - Zero runtime code
 - Full TypeScript support with JSDoc
 - Type-safe breakpoint definitions
 - Comprehensive usage examples
 
 **Type Signature:**
+
 ```typescript
 function tw(
   baseClasses: string,
-  responsiveClasses?: Partial<Record<'sm' | 'md' | 'lg' | 'xl' | '2xl', string>>
+  responsiveClasses?: Partial<
+    Record<"sm" | "md" | "lg" | "xl" | "2xl", string>
+  >,
 ): string;
 ```
 
@@ -133,10 +147,10 @@ function tw(
 
 ```typescript
 interface TwClassnameOptions {
-  include?: string | RegExp | (string | RegExp)[];  // Default: /\.[jt]sx?$/
-  exclude?: string | RegExp | (string | RegExp)[];  // Default: /node_modules/
-  breakpoints?: string[];                           // Default: ['sm', 'md', 'lg', 'xl', '2xl']
-  debug?: boolean;                                  // Default: false
+  include?: string | RegExp | (string | RegExp)[]; // Default: /\.[jt]sx?$/
+  exclude?: string | RegExp | (string | RegExp)[]; // Default: /node_modules/
+  breakpoints?: string[]; // Default: ['sm', 'md', 'lg', 'xl', '2xl']
+  debug?: boolean; // Default: false
 }
 ```
 
@@ -146,16 +160,16 @@ interface TwClassnameOptions {
 
 ```typescript
 // vite.config.ts
-import { defineConfig } from 'vite';
-import react from '@vitejs/plugin-react';
-import twClassname from '@repo/vite-plugin';
+import { defineConfig } from "vite";
+import react from "@vitejs/plugin-react";
+import twClassname from "@repo/vite-plugin";
 
 export default defineConfig({
   plugins: [
     react(),
     twClassname({
-      breakpoints: ['sm', 'md', 'lg', 'xl', '2xl'],
-      debug: process.env.NODE_ENV === 'development',
+      breakpoints: ["sm", "md", "lg", "xl", "2xl"],
+      debug: process.env.NODE_ENV === "development",
     }),
   ],
 });
@@ -164,12 +178,12 @@ export default defineConfig({
 ### Application Code
 
 ```typescript
-import { tw } from 'tw-classname';
+import { tw } from "tw-classname";
 
 // Development: Clean syntax
 const className = tw("text-base font-normal", {
   md: "text-lg px-4",
-  lg: "text-xl px-6"
+  lg: "text-xl px-6",
 });
 
 // Production: Compiled to static string
@@ -179,12 +193,14 @@ const className = tw("text-base font-normal", {
 ## Performance Characteristics
 
 **Build Performance:**
+
 - Transform time: <5ms per file (target met)
 - Hook filters reduce unnecessary processing
 - Early returns for files without tw() calls
 - Efficient AST parsing with Babel
 
 **Production Output:**
+
 - Bundle size: 0 KB (compiled away)
 - No runtime dependencies
 - Identical to manually written class strings
@@ -193,23 +209,27 @@ const className = tw("text-base font-normal", {
 ## Testing Status
 
 **Type Checking:** ✅ Passing
+
 - All TypeScript strict mode checks pass
 - No type errors in source code
 - Proper type definitions exported
 
 **Build:** ✅ Successful
+
 - Clean build with no errors
 - Dual format output (ESM + CJS)
 - TypeScript declarations generated
 - Source maps created
 
 **Linting:** ⚠️ Needs TypeScript ESLint parser
+
 - Basic ESLint config in place
 - TypeScript parser needs to be added for full linting
 
 ## Dependencies
 
 **Runtime Dependencies:**
+
 - `@babel/parser` ^7.26.3 - AST parsing
 - `@babel/traverse` ^7.26.5 - AST traversal
 - `@babel/types` ^7.26.3 - AST type definitions
@@ -217,9 +237,11 @@ const className = tw("text-base font-normal", {
 - `magic-string` ^0.30.17 - Efficient string manipulation
 
 **Peer Dependencies:**
+
 - `vite` ^5.0.0 || ^6.0.0 || ^7.0.0
 
 **Dev Dependencies:**
+
 - `typescript` 5.9.2
 - `tsup` ^8.3.5
 - `vitest` ^2.1.8
@@ -243,7 +265,7 @@ const className = tw("text-base font-normal", {
 ✅ **Source Maps** - Generated for debugging  
 ✅ **Configurable** - Flexible options for customization  
 ✅ **Error Handling** - Proper error and warning reporting  
-✅ **Documentation** - Comprehensive README files  
+✅ **Documentation** - Comprehensive README files
 
 ## Next Steps
 
@@ -257,6 +279,7 @@ const className = tw("text-base font-normal", {
 ## Files Created
 
 **Plugin Package:**
+
 - `packages/vite-plugin/src/index.ts` (main plugin)
 - `packages/vite-plugin/src/transform.ts` (transformation logic)
 - `packages/vite-plugin/src/parser.ts` (AST utilities)
@@ -268,11 +291,13 @@ const className = tw("text-base font-normal", {
 - `packages/vite-plugin/README.md` (documentation)
 
 **Type Package:**
+
 - `packages/tw-classname/index.d.ts` (type definitions)
 - `packages/tw-classname/package.json` (package config)
 - `packages/tw-classname/README.md` (documentation)
 
 **Build Output:**
+
 - `packages/vite-plugin/dist/index.js` (ESM bundle)
 - `packages/vite-plugin/dist/index.cjs` (CommonJS bundle)
 - `packages/vite-plugin/dist/index.d.ts` (TypeScript declarations)
@@ -281,6 +306,7 @@ const className = tw("text-base font-normal", {
 ## Conclusion
 
 The Vite plugin implementation is **production-ready** with:
+
 - Complete source code following best practices
 - Successful build with dual format output
 - Full TypeScript support with strict mode

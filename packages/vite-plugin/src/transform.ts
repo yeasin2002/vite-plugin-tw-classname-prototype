@@ -1,6 +1,6 @@
-import { parse } from '@babel/parser';
-import traverse from '@babel/traverse';
-import MagicString from 'magic-string';
+import { parse } from "@babel/parser";
+import traverse from "@babel/traverse";
+import MagicString from "magic-string";
 import {
   buildClassString,
   extractObjectExpression,

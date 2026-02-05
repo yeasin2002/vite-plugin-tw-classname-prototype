@@ -13,7 +13,7 @@ Turborepo monorepo using pnpm workspaces:
 │   ├── eslint-config/     # Shared ESLint configurations
 │   ├── typescript-config/ # Shared TypeScript configurations
 ├── package/               # Shared packages
-│   ├── [related packages]     
+│   ├── [related packages]
 │
 ├── .kiro/steering/        # AI assistant guidance documents
 ├── turbo.json             # Turborepo task configuration
@@ -26,6 +26,7 @@ Turborepo monorepo using pnpm workspaces:
 ### Workspace Dependencies
 
 Internal packages use `workspace:*` protocol:
+
 ```json
 {
   "dependencies": {
@@ -49,6 +50,7 @@ Internal packages use `workspace:*` protocol:
 ### Component Exports
 
 UI package uses direct file exports pattern:
+
 ```json
 {
   "exports": {
@@ -62,6 +64,7 @@ Import as: `import { Button } from "@repo/ui/button"`
 ### Scripts Organization
 
 Standard script names across all packages:
+
 - `dev` - Development mode (persistent Turbo task)
 - `build` - Production build (depends on upstream `^build`)
 - `lint` - ESLint with `--max-warnings 0`
@@ -70,10 +73,11 @@ Standard script names across all packages:
 ### Turbo Task Dependencies
 
 Use `^` prefix for upstream dependencies:
+
 ```json
 {
   "build": {
-    "dependsOn": ["^build"]  // Build dependencies first
+    "dependsOn": ["^build"] // Build dependencies first
   }
 }
 ```
@@ -105,17 +109,20 @@ packages/
 ## File Organization Rules
 
 **Plugin Package (`vite-plugin`)**:
+
 - Main export: Default function returning Vite Plugin
 - Keep transformation logic separate from plugin setup
 - Use `magic-string` for code modifications
 - Generate source maps for debugging
 
 **Types Package (`tw-classname`)**:
+
 - Export only TypeScript definitions
 - No runtime code
 - Defines `tw()` function signature and breakpoint types
 
 **Test Organization**:
+
 - Unit tests alongside source files or in `tests/` folder
 - Integration tests in separate `tests/integration/` folder
 - Fixtures in `tests/fixtures/` for complex test cases
@@ -123,24 +130,27 @@ packages/
 ## Import Patterns
 
 **Within Plugin**:
+
 ```typescript
-import type { Plugin } from 'vite';
-import MagicString from 'magic-string';
-import { createFilter } from '@rollup/pluginutils';
+import type { Plugin } from "vite";
+import MagicString from "magic-string";
+import { createFilter } from "@rollup/pluginutils";
 ```
 
 **End User Imports**:
+
 ```typescript
 // Type-only import (compiled away)
-import { tw } from 'tw-classname';
+import { tw } from "tw-classname";
 
 // Plugin import in vite.config.ts
-import twClassname from '@repo/vite-plugin';
+import twClassname from "@repo/vite-plugin";
 ```
 
 ## Documentation Structure
 
 When creating docs, organize as:
+
 ```
 docs/
 ├── getting-started/       # Installation, quick start

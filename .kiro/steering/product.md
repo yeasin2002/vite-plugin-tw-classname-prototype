@@ -19,12 +19,14 @@ Eliminates verbose responsive prefixes (`md:`, `lg:`, `xl:`) by allowing develop
 ## Architecture Philosophy
 
 **Vite-Only Strategy**: Built exclusively as a Vite plugin (not Webpack/Babel/Next.js) because:
+
 - Vite is the modern standard for all major frameworks (React, Vue, Svelte)
 - Single codebase covers entire ecosystem
 - Leverages Vite's performance and plugin API
 - Native ES modules and fast HMR
 
 **Transformation Flow**:
+
 1. User writes `tw()` calls in source code
 2. Plugin detects calls via regex/AST during build
 3. Transforms to prefixed Tailwind classes

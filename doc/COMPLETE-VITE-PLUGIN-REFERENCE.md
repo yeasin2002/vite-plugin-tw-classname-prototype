@@ -3,6 +3,7 @@
 ## Comprehensive Documentation for tw-classname Plugin Development
 
 **Sources:**
+
 - Vite Official Documentation: https://vite.dev/guide/api-plugin
 - Rollup Plugin Development: https://rollupjs.org/plugin-development/
 - Vite GitHub Repository & Discussions
@@ -70,6 +71,7 @@ User Code (src/)
 ### Build vs Dev Behavior
 
 **Development Mode:**
+
 - Vite dev server creates plugin container
 - Invokes Rollup build hooks
 - Modules are NOT bundled
@@ -77,12 +79,14 @@ User Code (src/)
 - Source maps are inline
 
 **Production Mode:**
+
 - Full Rollup bundling
 - All output generation hooks are called
 - Chunks are created and optimized
 - Source maps are external (if enabled)
 
 **Critical Note from Docs:**
+
 > "Note that the moduleParsed hook is not called during dev, because Vite avoids full AST parses for better performance."
 
 ---
@@ -92,9 +96,10 @@ User Code (src/)
 ### Universal Hooks (Rollup)
 
 #### 1. options
+
 **Type:** `async, sequential`  
 **When:** First hook, called once on server start  
-**Purpose:** Modify Rollup options  
+**Purpose:** Modify Rollup options
 
 ```typescript
 options(inputOptions: InputOptions): InputOptions | null {
@@ -106,11 +111,13 @@ options(inputOptions: InputOptions): InputOptions | null {
 ```
 
 #### 2. buildStart
+
 **Type:** `async, parallel`  
 **When:** After options, once per build  
-**Purpose:** Access to resolved options  
+**Purpose:** Access to resolved options
 
 **Official Recommendation:**
+
 > "This is the recommended hook to use when you need access to the options passed to rollup.rollup()."
 
 ```typescript
@@ -121,9 +128,10 @@ buildStart(options: InputOptions): void {
 ```
 
 #### 3. resolveId
+
 **Type:** `async, first`  
 **When:** For each import statement  
-**Purpose:** Custom module resolution  
+**Purpose:** Custom module resolution
 
 ```typescript
 resolveId(
@@ -144,15 +152,17 @@ resolveId(
 ```
 
 **Important Notes:**
+
 - Return `null` to defer to other plugins
 - Return `false` to mark as external
 - Prefix virtual modules with `\0`
 - `importer` may be absolute path for index.html
 
 #### 4. load
+
 **Type:** `async, first`  
 **When:** After resolveId for each module  
-**Purpose:** Provide module content  
+**Purpose:** Provide module content
 
 ```typescript
 load(id: string): LoadResult {
@@ -167,26 +177,31 @@ load(id: string): LoadResult {
 ```
 
 **Return Value Options:**
+
 ```typescript
-type LoadResult = string | null | {
-  code: string;
-  map?: SourceMap | null;
-  ast?: ESTree.Program;
-  meta?: Record<string, any>;
-  moduleSideEffects?: boolean | 'no-treeshake';
-  syntheticNamedExports?: boolean | string;
-};
+type LoadResult =
+  | string
+  | null
+  | {
+      code: string;
+      map?: SourceMap | null;
+      ast?: ESTree.Program;
+      meta?: Record<string, any>;
+      moduleSideEffects?: boolean | "no-treeshake";
+      syntheticNamedExports?: boolean | string;
+    };
 ```
 
 #### 5. transform
+
 **Type:** `async, sequential`  
 **When:** After load for each module  
-**Purpose:** Transform module code  
+**Purpose:** Transform module code
 
 ```typescript
 transform(code: string, id: string): TransformResult {
   if (!id.endsWith('.custom')) return null;
-  
+
   return {
     code: transformCode(code),
     map: generateSourceMap(),
@@ -195,14 +210,17 @@ transform(code: string, id: string): TransformResult {
 ```
 
 **Performance Note:**
+
 > "In watch mode or when using the cache explicitly, the result of this hook is cached when rebuilding."
 
 #### 6. moduleParsed
+
 **Type:** `async, parallel`  
 **When:** After module is fully parsed  
-**Purpose:** Access module info  
+**Purpose:** Access module info
 
 **Important:**
+
 > "Not called during dev because Vite avoids full AST parses for better performance."
 
 ```typescript
@@ -213,9 +231,10 @@ moduleParsed(moduleInfo: ModuleInfo): void {
 ```
 
 #### 7. buildEnd
+
 **Type:** `async, parallel`  
 **When:** After all modules processed  
-**Purpose:** Cleanup, final operations  
+**Purpose:** Cleanup, final operations
 
 ```typescript
 buildEnd(error?: Error): void {
@@ -227,9 +246,10 @@ buildEnd(error?: Error): void {
 ```
 
 #### 8. closeBundle
+
 **Type:** `async, parallel`  
 **When:** Server shutdown  
-**Purpose:** Final cleanup  
+**Purpose:** Final cleanup
 
 ```typescript
 closeBundle(): void {
@@ -240,9 +260,10 @@ closeBundle(): void {
 ### Vite-Specific Hooks
 
 #### 1. config
+
 **Type:** `async, sequential`  
 **When:** Before Vite config is resolved  
-**Purpose:** Modify Vite configuration  
+**Purpose:** Modify Vite configuration
 
 ```typescript
 config(
@@ -262,29 +283,32 @@ config(
 ```
 
 **Context Available:**
+
 - `this.meta.rollupVersion`
 - `this.meta.watchMode`
 - `this.error()`, `this.warn()`, `this.info()`, `this.debug()`
 
 #### 2. configResolved
+
 **Type:** `async, parallel`  
 **When:** After Vite config is resolved  
-**Purpose:** Read final config  
+**Purpose:** Read final config
 
 **Official Example:**
+
 ```typescript
 const examplePlugin = () => {
   let config;
 
   return {
-    name: 'read-config',
-    
+    name: "read-config",
+
     configResolved(resolvedConfig) {
       config = resolvedConfig;
     },
-    
+
     transform(code, id) {
-      if (config.command === 'serve') {
+      if (config.command === "serve") {
         // dev mode
       } else {
         // build mode
@@ -295,15 +319,18 @@ const examplePlugin = () => {
 ```
 
 **Command Values:**
+
 - `serve` - Development server
 - `build` - Production build
 
 #### 3. configureServer
+
 **Type:** `async, sequential`  
 **When:** Dev server setup  
-**Purpose:** Configure dev server  
+**Purpose:** Configure dev server
 
 **Adding Middleware (Pre):**
+
 ```typescript
 configureServer(server: ViteDevServer): void {
   server.middlewares.use((req, res, next) => {
@@ -314,6 +341,7 @@ configureServer(server: ViteDevServer): void {
 ```
 
 **Adding Middleware (Post):**
+
 ```typescript
 configureServer(server: ViteDevServer): () => void {
   return () => {
@@ -326,12 +354,13 @@ configureServer(server: ViteDevServer): () => void {
 ```
 
 **Storing Server Reference:**
+
 ```typescript
 const myPlugin = () => {
   let server;
-  
+
   return {
-    name: 'my-plugin',
+    name: "my-plugin",
     configureServer(_server) {
       server = _server;
     },
@@ -345,23 +374,27 @@ const myPlugin = () => {
 ```
 
 #### 4. configurePreviewServer
+
 **Type:** `async, sequential`  
 **When:** Preview server setup  
-**Purpose:** Configure preview server  
+**Purpose:** Configure preview server
 
 Same pattern as `configureServer`.
 
 #### 5. transformIndexHtml
+
 **Type:** `async, sequential`  
 **When:** HTML file is loaded  
-**Purpose:** Transform HTML  
+**Purpose:** Transform HTML
 
 **Order Options:**
+
 - `undefined` (default) - After HTML transformation
 - `'pre'` - Before HTML processing
 - `'post'` - After all other transformations
 
 **Basic Example:**
+
 ```typescript
 transformIndexHtml(html: string): string {
   return html.replace(
@@ -372,6 +405,7 @@ transformIndexHtml(html: string): string {
 ```
 
 **Tag Injection:**
+
 ```typescript
 transformIndexHtml(html: string): {
   html: string;
@@ -396,27 +430,29 @@ transformIndexHtml(html: string): {
 ```
 
 **Tag Descriptor:**
+
 ```typescript
 interface HtmlTagDescriptor {
   tag: string;
   attrs?: Record<string, string | boolean>;
   children?: string | HtmlTagDescriptor[];
-  injectTo?: 'head' | 'body' | 'head-prepend' | 'body-prepend';
+  injectTo?: "head" | "body" | "head-prepend" | "body-prepend";
 }
 ```
 
 #### 6. handleHotUpdate
+
 **Type:** `async, sequential`  
 **When:** File change detected (watch mode)  
-**Purpose:** Custom HMR handling  
+**Purpose:** Custom HMR handling
 
 ```typescript
-handleHotUpdate({ 
-  file, 
-  timestamp, 
-  modules, 
-  read, 
-  server 
+handleHotUpdate({
+  file,
+  timestamp,
+  modules,
+  read,
+  server
 }: HmrContext): ModuleNode[] | void {
   if (file.endsWith('.custom')) {
     // Custom HMR logic
@@ -425,13 +461,14 @@ handleHotUpdate({
       event: 'custom-update',
       data: { file },
     });
-    
+
     return []; // Don't trigger default HMR
   }
 }
 ```
 
 **HMR Context:**
+
 ```typescript
 interface HmrContext {
   file: string;
@@ -449,6 +486,7 @@ interface HmrContext {
 ### Pattern 1: Regex-Based (Fast, Limited)
 
 **Use When:**
+
 - Simple string replacements
 - No code structure awareness needed
 - Maximum performance required
@@ -456,16 +494,16 @@ interface HmrContext {
 ```typescript
 transform(code: string, id: string): TransformResult {
   if (!id.endsWith('.custom')) return null;
-  
+
   const transformed = code.replace(
     /tw\(\s*['"`]([^'"`]+)['"`]\s*,\s*\{([^}]+)\}\s*\)/g,
     (match, base, responsive) => {
       return `"${base} ${parseResponsive(responsive)}"`;
     }
   );
-  
+
   if (transformed === code) return null;
-  
+
   return {
     code: transformed,
     map: null, // Preserve existing source maps
@@ -474,11 +512,13 @@ transform(code: string, id: string): TransformResult {
 ```
 
 **Pros:**
+
 - Extremely fast
 - Simple implementation
 - No dependencies
 
 **Cons:**
+
 - Cannot handle nested structures
 - Error-prone for complex syntax
 - No code awareness
@@ -486,6 +526,7 @@ transform(code: string, id: string): TransformResult {
 ### Pattern 2: AST-Based with Babel (Robust, Accurate)
 
 **Use When:**
+
 - Need to understand code structure
 - Complex transformations
 - Accurate source maps required
@@ -497,15 +538,15 @@ import generate from '@babel/generator';
 
 transform(code: string, id: string): TransformResult {
   if (!id.match(/\.[jt]sx?$/)) return null;
-  
+
   // Parse to AST
   const ast = parse(code, {
     sourceType: 'module',
     plugins: ['jsx', 'typescript'],
   });
-  
+
   let modified = false;
-  
+
   // Traverse and modify
   traverse(ast, {
     CallExpression(path) {
@@ -515,15 +556,15 @@ transform(code: string, id: string): TransformResult {
       }
     },
   });
-  
+
   if (!modified) return null;
-  
+
   // Generate code
   const output = generate(ast, {
     sourceMaps: true,
     sourceFileName: id,
   });
-  
+
   return {
     code: output.code,
     map: output.map,
@@ -532,11 +573,13 @@ transform(code: string, id: string): TransformResult {
 ```
 
 **Pros:**
+
 - Accurate code understanding
 - Handles all JavaScript syntax
 - Generates accurate source maps
 
 **Cons:**
+
 - Slower than regex
 - Requires Babel dependencies
 - More complex implementation
@@ -544,6 +587,7 @@ transform(code: string, id: string): TransformResult {
 ### Pattern 3: Hybrid with magic-string (Recommended)
 
 **Use When:**
+
 - Need AST for analysis
 - Want efficient string manipulation
 - Require accurate source maps
@@ -555,29 +599,29 @@ import MagicString from 'magic-string';
 
 transform(code: string, id: string): TransformResult {
   if (!code.includes('tw(')) return null;
-  
+
   const ast = parse(code, {
     sourceType: 'module',
     plugins: ['jsx', 'typescript'],
   });
-  
+
   const s = new MagicString(code);
   let hasChanges = false;
-  
+
   traverse(ast, {
     CallExpression(path) {
       if (path.node.callee.name === 'tw') {
         const { start, end } = path.node;
         const replacement = transformTwCall(path.node);
-        
+
         s.overwrite(start, end, replacement);
         hasChanges = true;
       }
     },
   });
-  
+
   if (!hasChanges) return null;
-  
+
   return {
     code: s.toString(),
     map: s.generateMap({ hires: true }),
@@ -586,11 +630,13 @@ transform(code: string, id: string): TransformResult {
 ```
 
 **Pros:**
+
 - Best of both worlds
 - Efficient source maps
 - Clean API
 
 **Cons:**
+
 - Requires two dependencies
 - Slightly more complex
 
@@ -605,15 +651,16 @@ transform(code: string, id: string): TransformResult {
 When using `@babel/parser` in Vite plugins, you MUST set `sourceType: 'module'`:
 
 ```typescript
-import { parse } from '@babel/parser';
+import { parse } from "@babel/parser";
 
 const ast = parse(code, {
-  sourceType: 'module', // REQUIRED
-  plugins: ['jsx', 'typescript'],
+  sourceType: "module", // REQUIRED
+  plugins: ["jsx", "typescript"],
 });
 ```
 
 **Error Without It:**
+
 ```
 'import' and 'export' may appear only with 'sourceType: "module"'
 ```
@@ -622,15 +669,15 @@ const ast = parse(code, {
 
 ```typescript
 const parserPlugins = [
-  'jsx',              // React JSX
-  'typescript',       // TypeScript
-  'decorators-legacy', // Decorators
-  'classProperties',  // Class fields
-  'dynamicImport',    // import()
+  "jsx", // React JSX
+  "typescript", // TypeScript
+  "decorators-legacy", // Decorators
+  "classProperties", // Class fields
+  "dynamicImport", // import()
 ];
 
 const ast = parse(code, {
-  sourceType: 'module',
+  sourceType: "module",
   plugins: parserPlugins,
 });
 ```
@@ -638,12 +685,13 @@ const ast = parse(code, {
 ### Common Traversal Patterns
 
 **Finding Function Calls:**
+
 ```typescript
 traverse(ast, {
   CallExpression(path) {
     if (
-      path.node.callee.type === 'Identifier' &&
-      path.node.callee.name === 'tw'
+      path.node.callee.type === "Identifier" &&
+      path.node.callee.name === "tw"
     ) {
       // Found tw() call
       const args = path.node.arguments;
@@ -653,12 +701,13 @@ traverse(ast, {
 ```
 
 **Extracting String Literals:**
+
 ```typescript
 function extractString(node: Node): string | null {
-  if (node.type === 'StringLiteral') {
+  if (node.type === "StringLiteral") {
     return node.value;
   }
-  if (node.type === 'TemplateLiteral') {
+  if (node.type === "TemplateLiteral") {
     // Handle template literals
     if (node.expressions.length === 0) {
       return node.quasis[0].value.raw;
@@ -669,22 +718,23 @@ function extractString(node: Node): string | null {
 ```
 
 **Extracting Object Properties:**
+
 ```typescript
 function extractObject(node: Node): Record<string, string> {
   const result: Record<string, string> = {};
-  
-  if (node.type === 'ObjectExpression') {
+
+  if (node.type === "ObjectExpression") {
     for (const prop of node.properties) {
       if (
-        prop.type === 'ObjectProperty' &&
-        prop.key.type === 'Identifier' &&
-        prop.value.type === 'StringLiteral'
+        prop.type === "ObjectProperty" &&
+        prop.key.type === "Identifier" &&
+        prop.value.type === "StringLiteral"
       ) {
         result[prop.key.name] = prop.value.value;
       }
     }
   }
-  
+
   return result;
 }
 ```
@@ -695,9 +745,9 @@ function extractObject(node: Node): Record<string, string> {
 traverse(ast, {
   CallExpression(path) {
     const { start, end, loc } = path.node;
-    
-    console.log('Character range:', start, end);
-    console.log('Line/column:', loc.start, loc.end);
+
+    console.log("Character range:", start, end);
+    console.log("Line/column:", loc.start, loc.end);
   },
 });
 ```
@@ -713,8 +763,8 @@ traverse(ast, {
 ```typescript
 export default function myPlugin() {
   return {
-    name: 'my-plugin',
-    
+    name: "my-plugin",
+
     transform: {
       filter: {
         id: /\.[jt]sx?$/,
@@ -730,6 +780,7 @@ export default function myPlugin() {
 ```
 
 **Filter Performance:**
+
 - Executed in Rust (Rolldown)
 - No JavaScript overhead
 - Significantly faster than manual checks
@@ -740,10 +791,10 @@ export default function myPlugin() {
 transform(code, id) {
   // Cheapest check first
   if (!code.includes('tw(')) return null;
-  
+
   // More expensive check
   if (!filter(id)) return null;
-  
+
   // Most expensive operation
   return transformWithAST(code);
 }
@@ -756,14 +807,14 @@ const transformCache = new Map();
 
 transform(code, id) {
   const cacheKey = `${id}:${code}`;
-  
+
   if (transformCache.has(cacheKey)) {
     return transformCache.get(cacheKey);
   }
-  
+
   const result = transformCode(code);
   transformCache.set(cacheKey, result);
-  
+
   return result;
 }
 ```
@@ -776,7 +827,7 @@ transform(code, id) {
 transform(code, id) {
   // Only parse if transformation is needed
   if (!needsTransform(code)) return null;
-  
+
   // Now parse
   const ast = parse(code, parserOptions);
   // ...
@@ -793,7 +844,7 @@ const output = generate(ast);
 
 // Do this for simple replacements:
 const s = new MagicString(code);
-s.replace('foo', 'bar');
+s.replace("foo", "bar");
 return { code: s.toString(), map: s.generateMap() };
 ```
 
@@ -806,13 +857,14 @@ return { code: s.toString(), map: s.generateMap() };
 ### When to Preserve Source Maps
 
 **Official Guidance:**
+
 > "If the transformation does not move code, you can preserve existing sourcemaps by setting map to null."
 
 ```typescript
 transform(code, id) {
   // Simple replacement
   const newCode = code.replace(/console\.log/g, 'console.debug');
-  
+
   return {
     code: newCode,
     map: null, // Preserves existing mappings
@@ -827,12 +879,12 @@ import MagicString from 'magic-string';
 
 transform(code, id) {
   const s = new MagicString(code);
-  
+
   // Make changes
   s.replace('old', 'new');
   s.prepend('/* header */\n');
   s.append('\n/* footer */');
-  
+
   return {
     code: s.toString(),
     map: s.generateMap({
@@ -848,12 +900,16 @@ transform(code, id) {
 ### Generating Source Maps with Babel
 
 ```typescript
-import generate from '@babel/generator';
+import generate from "@babel/generator";
 
-const output = generate(ast, {
-  sourceMaps: true,
-  sourceFileName: id,
-}, code);
+const output = generate(
+  ast,
+  {
+    sourceMaps: true,
+    sourceFileName: id,
+  },
+  code,
+);
 
 return {
   code: output.code,
@@ -865,9 +921,9 @@ return {
 
 ```typescript
 interface SourceMapOptions {
-  hires?: boolean;         // More accurate but larger
-  source?: string;         // Original source filename
-  file?: string;          // Generated file name
+  hires?: boolean; // More accurate but larger
+  source?: string; // Original source filename
+  file?: string; // Generated file name
   includeContent?: boolean; // Include original source
 }
 ```
@@ -879,6 +935,7 @@ interface SourceMapOptions {
 ### Convention
 
 **Official:**
+
 > "Virtual modules in Vite (and Rollup) are prefixed with virtual: for the user-facing path by convention."
 
 > "Internally, plugins that use virtual modules should prefix the module ID with \0 while resolving the id."
@@ -887,18 +944,18 @@ interface SourceMapOptions {
 
 ```typescript
 export default function myPlugin() {
-  const virtualModuleId = 'virtual:my-config';
-  const resolvedVirtualModuleId = '\0' + virtualModuleId;
+  const virtualModuleId = "virtual:my-config";
+  const resolvedVirtualModuleId = "\0" + virtualModuleId;
 
   return {
-    name: 'my-plugin',
-    
+    name: "my-plugin",
+
     resolveId(id) {
       if (id === virtualModuleId) {
         return resolvedVirtualModuleId;
       }
     },
-    
+
     load(id) {
       if (id === resolvedVirtualModuleId) {
         return `
@@ -917,7 +974,7 @@ export default function myPlugin() {
 
 ```typescript
 // In application code
-import config from 'virtual:my-config';
+import config from "virtual:my-config";
 
 console.log(config.apiUrl);
 ```
@@ -926,12 +983,12 @@ console.log(config.apiUrl);
 
 ```typescript
 // virtual-modules.d.ts
-declare module 'virtual:my-config' {
+declare module "virtual:my-config" {
   export interface Config {
     apiUrl: string;
     version: string;
   }
-  
+
   const config: Config;
   export default config;
 }
@@ -951,19 +1008,20 @@ async resolveId(source, importer) {
   const resolved = await this.resolve(source, importer, {
     skipSelf: true, // Skip this plugin's resolveId
   });
-  
+
   if (resolved && !resolved.external) {
     // Modify or proxy the resolution
     return {
       id: resolved.id + '?modified',
     };
   }
-  
+
   return null;
 }
 ```
 
 **Options:**
+
 ```typescript
 interface ResolveOptions {
   skipSelf?: boolean;
@@ -981,20 +1039,20 @@ interface ResolveOptions {
 ```typescript
 async resolveId(source, importer) {
   const resolution = await this.resolve(source, importer);
-  
+
   if (resolution && !resolution.external) {
     // Load and inspect the module
     const moduleInfo = await this.load({
       id: resolution.id,
       resolveDependencies: true,
     });
-    
+
     if (moduleInfo.code.includes('/* special */')) {
       // Return proxy module
       return `${resolution.id}?proxy`;
     }
   }
-  
+
   return null;
 }
 ```
@@ -1002,11 +1060,12 @@ async resolveId(source, importer) {
 ### this.emitFile
 
 **Emit Assets:**
+
 ```typescript
 const referenceId = this.emitFile({
-  type: 'asset',
-  name: 'logo.png',
-  source: fs.readFileSync('assets/logo.png'),
+  type: "asset",
+  name: "logo.png",
+  source: fs.readFileSync("assets/logo.png"),
 });
 
 // Reference in code
@@ -1014,11 +1073,12 @@ return `export default import.meta.ROLLUP_FILE_URL_${referenceId}`;
 ```
 
 **Emit Chunks:**
+
 ```typescript
 const chunkId = this.emitFile({
-  type: 'chunk',
-  id: 'src/dynamic-module.js',
-  name: 'dynamic',
+  type: "chunk",
+  id: "src/dynamic-module.js",
+  name: "dynamic",
 });
 ```
 
@@ -1027,7 +1087,7 @@ const chunkId = this.emitFile({
 ```typescript
 transform(code, id) {
   const moduleInfo = this.getModuleInfo(id);
-  
+
   console.log({
     isEntry: moduleInfo.isEntry,
     importers: moduleInfo.importers,
@@ -1049,7 +1109,7 @@ transform(code, id) {
       pluginCode: 'DEPRECATED_API',
     });
   }
-  
+
   if (code.includes('INVALID')) {
     this.error({
       message: 'Invalid syntax',
@@ -1068,26 +1128,26 @@ transform(code, id) {
 
 ```typescript
 // plugin.test.ts
-import { describe, it, expect } from 'vitest';
-import { transformTwCall } from './plugin';
+import { describe, it, expect } from "vitest";
+import { transformTwCall } from "./plugin";
 
-describe('transformTwCall', () => {
-  it('transforms basic responsive classes', () => {
-    const input = { base: 'text-base', md: 'text-lg' };
+describe("transformTwCall", () => {
+  it("transforms basic responsive classes", () => {
+    const input = { base: "text-base", md: "text-lg" };
     const output = transformTwCall(input);
-    
-    expect(output).toBe('text-base md:text-lg');
+
+    expect(output).toBe("text-base md:text-lg");
   });
-  
-  it('handles multiple breakpoints', () => {
+
+  it("handles multiple breakpoints", () => {
     const input = {
-      base: 'flex',
-      md: 'gap-4',
-      lg: 'gap-6',
+      base: "flex",
+      md: "gap-4",
+      lg: "gap-6",
     };
     const output = transformTwCall(input);
-    
-    expect(output).toBe('flex md:gap-4 lg:gap-6');
+
+    expect(output).toBe("flex md:gap-4 lg:gap-6");
   });
 });
 ```
@@ -1096,30 +1156,30 @@ describe('transformTwCall', () => {
 
 ```typescript
 // integration.test.ts
-import { build } from 'vite';
-import twClassname from './plugin';
+import { build } from "vite";
+import twClassname from "./plugin";
 
-describe('Vite integration', () => {
-  it('transforms in production build', async () => {
+describe("Vite integration", () => {
+  it("transforms in production build", async () => {
     const result = await build({
       plugins: [twClassname()],
-      logLevel: 'silent',
+      logLevel: "silent",
       build: {
         write: false,
         rollupOptions: {
           input: {
-            main: 'fixtures/basic.tsx',
+            main: "fixtures/basic.tsx",
           },
         },
       },
     });
 
     const output = result.output.find(
-      chunk => chunk.type === 'chunk' && chunk.isEntry
+      (chunk) => chunk.type === "chunk" && chunk.isEntry,
     );
-    
-    expect(output.code).toContain('md:text-lg');
-    expect(output.code).not.toContain('tw(');
+
+    expect(output.code).toContain("md:text-lg");
+    expect(output.code).not.toContain("tw(");
   });
 });
 ```
@@ -1127,18 +1187,18 @@ describe('Vite integration', () => {
 ### Snapshot Testing
 
 ```typescript
-import { transformSync } from '@babel/core';
+import { transformSync } from "@babel/core";
 
-describe('transform snapshots', () => {
-  it('matches snapshot', () => {
+describe("transform snapshots", () => {
+  it("matches snapshot", () => {
     const input = `
       const className = tw('base', { md: 'responsive' });
     `;
-    
+
     const result = transformSync(input, {
       plugins: [twClassnamePlugin],
     });
-    
+
     expect(result.code).toMatchSnapshot();
   });
 });
@@ -1148,24 +1208,22 @@ describe('transform snapshots', () => {
 
 ```typescript
 // dev-server.test.ts
-import { createServer } from 'vite';
-import twClassname from './plugin';
+import { createServer } from "vite";
+import twClassname from "./plugin";
 
-describe('dev server', () => {
-  it('transforms during development', async () => {
+describe("dev server", () => {
+  it("transforms during development", async () => {
     const server = await createServer({
       plugins: [twClassname()],
       server: { port: 3000 },
     });
-    
+
     await server.listen();
-    
-    const module = await server.moduleGraph.getModuleByUrl(
-      '/src/App.tsx'
-    );
-    
-    expect(module.transformResult.code).toContain('md:text-lg');
-    
+
+    const module = await server.moduleGraph.getModuleByUrl("/src/App.tsx");
+
+    expect(module.transformResult.code).toContain("md:text-lg");
+
     await server.close();
   });
 });
@@ -1198,7 +1256,7 @@ transform(code, id) {
 ```typescript
 transform(code, id) {
   const deprecatedPattern = /oldAPI\(/g;
-  
+
   if (deprecatedPattern.test(code)) {
     this.warn({
       message: 'oldAPI() is deprecated, use newAPI() instead',
@@ -1218,7 +1276,7 @@ transform(code, id) {
 transform(code, id) {
   // Fast path - regex
   if (!code.includes('tw(')) return null;
-  
+
   try {
     // Slow path - AST
     return transformWithAST(code, id);
@@ -1281,22 +1339,22 @@ transform(code, id) {
 
 ```typescript
 // tsup.config.ts
-import { defineConfig } from 'tsup';
+import { defineConfig } from "tsup";
 
 export default defineConfig({
-  entry: ['src/index.ts'],
-  format: ['cjs', 'esm'],
+  entry: ["src/index.ts"],
+  format: ["cjs", "esm"],
   dts: true,
   clean: true,
   splitting: false,
   sourcemap: true,
-  external: ['vite'],
+  external: ["vite"],
 });
 ```
 
 ### README Structure
 
-```markdown
+````markdown
 # vite-plugin-tw-classname
 
 Transform tw() calls to static Tailwind classes at build time.
@@ -1306,13 +1364,14 @@ Transform tw() calls to static Tailwind classes at build time.
 ```bash
 npm install -D vite-plugin-tw-classname
 ```
+````
 
 ## Usage
 
 ```typescript
 // vite.config.ts
-import { defineConfig } from 'vite';
-import twClassname from 'vite-plugin-tw-classname';
+import { defineConfig } from "vite";
+import twClassname from "vite-plugin-tw-classname";
 
 export default defineConfig({
   plugins: [twClassname()],
@@ -1330,7 +1389,8 @@ export default defineConfig({
 ## License
 
 MIT
-```
+
+````
 
 ### Publishing Checklist
 
@@ -1393,7 +1453,7 @@ export default function twClassname(
         id: /\.[jt]sx?$/,
         code: /tw\(/,
       },
-      
+
       handler(code, id) {
         // Apply user filter
         if (!filter(id)) return null;
@@ -1432,7 +1492,7 @@ export default function twClassname(
 
               // Extract base classes
               const baseClasses = extractStringLiteral(args[0]);
-              
+
               // Extract responsive object
               const responsiveObj = extractObjectExpression(args[1]);
 
@@ -1447,7 +1507,7 @@ export default function twClassname(
                 // Replace in code
                 const { start, end } = path.node;
                 s.overwrite(start, end, `"${transformed}"`);
-                
+
                 hasTransforms = true;
 
                 if (debug) {
@@ -1525,31 +1585,31 @@ function buildClassString(
 
   return parts.join(' ');
 }
-```
+````
 
 ### Testing Suite
 
 ```typescript
 // tests/transform.test.ts
-import { describe, it, expect } from 'vitest';
-import twClassname from '../src/index';
+import { describe, it, expect } from "vitest";
+import twClassname from "../src/index";
 
-describe('tw-classname transform', () => {
+describe("tw-classname transform", () => {
   const plugin = twClassname();
   const transform = plugin.transform as any;
 
-  it('transforms basic responsive classes', () => {
+  it("transforms basic responsive classes", () => {
     const input = `
       const cls = tw("text-base", { md: "text-lg" });
     `;
 
-    const result = transform.handler(input, 'test.tsx');
-    
+    const result = transform.handler(input, "test.tsx");
+
     expect(result.code).toContain('"text-base md:text-lg"');
-    expect(result.code).not.toContain('tw(');
+    expect(result.code).not.toContain("tw(");
   });
 
-  it('handles multiple breakpoints', () => {
+  it("handles multiple breakpoints", () => {
     const input = `
       tw("flex", { 
         md: "gap-4 justify-center",
@@ -1557,27 +1617,29 @@ describe('tw-classname transform', () => {
       })
     `;
 
-    const result = transform.handler(input, 'test.tsx');
-    
-    expect(result.code).toContain('flex md:gap-4 md:justify-center lg:gap-6 lg:items-end');
+    const result = transform.handler(input, "test.tsx");
+
+    expect(result.code).toContain(
+      "flex md:gap-4 md:justify-center lg:gap-6 lg:items-end",
+    );
   });
 
-  it('preserves code without tw() calls', () => {
+  it("preserves code without tw() calls", () => {
     const input = `
       const x = "hello";
       const y = 123;
     `;
 
-    const result = transform.handler(input, 'test.tsx');
-    
+    const result = transform.handler(input, "test.tsx");
+
     expect(result).toBeNull();
   });
 
-  it('generates source maps', () => {
+  it("generates source maps", () => {
     const input = `tw("base", { md: "md-class" })`;
-    
-    const result = transform.handler(input, 'test.tsx');
-    
+
+    const result = transform.handler(input, "test.tsx");
+
     expect(result.map).toBeDefined();
     expect(result.map.mappings).toBeTruthy();
   });
@@ -1589,11 +1651,13 @@ describe('tw-classname transform', () => {
 ## References & Resources
 
 ### Official Documentation
+
 - **Vite Plugin API:** https://vite.dev/guide/api-plugin
 - **Rollup Plugin Development:** https://rollupjs.org/plugin-development/
 - **Vite Configuration:** https://vite.dev/config/
 
 ### Tools & Libraries
+
 - **@rollup/pluginutils:** https://github.com/rollup/plugins/tree/master/packages/pluginutils
 - **magic-string:** https://github.com/rich-harris/magic-string
 - **@babel/parser:** https://babeljs.io/docs/babel-parser
@@ -1601,6 +1665,7 @@ describe('tw-classname transform', () => {
 - **vite-plugin-inspect:** https://github.com/antfu/vite-plugin-inspect
 
 ### Community Resources
+
 - **Awesome Vite:** https://github.com/vitejs/awesome-vite
 - **Vite Rolldown:** https://rolldown.rs/
 
