@@ -1,135 +1,176 @@
-# Turborepo starter
+# tw-classname
 
-This Turborepo starter is maintained by the Turborepo core team.
+A Vite plugin that transforms responsive Tailwind CSS utilities into cleaner, breakpoint-grouped syntax at build time with **zero runtime overhead**.
 
-## Using this example
+## Why tw-classname?
 
-Run the following command:
+Writing responsive Tailwind classes can get verbose and hard to read:
 
-```sh
-npx create-turbo@latest
+```tsx
+// Before: Repetitive prefixes
+className="text-base md:text-lg md:px-4 lg:text-xl lg:px-6 xl:text-2xl xl:px-8"
 ```
 
-## What's inside?
+With `tw-classname`, group classes by breakpoint for better readability:
 
-This Turborepo includes the following packages/apps:
-
-### Apps and Packages
-
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
-
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
-
-### Utilities
-
-This Turborepo has some additional tools already setup for you:
-
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
-
-### Build
-
-To build all apps and packages, run the following command:
-
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build
-yarn dlx turbo build
-pnpm exec turbo build
+```tsx
+// After: Clean and organized
+className={tw("text-base", {
+  md: "text-lg px-4",
+  lg: "text-xl px-6",
+  xl: "text-2xl px-8"
+})}
 ```
 
-You can build a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+At build time, this compiles back to standard Tailwind classes with **zero runtime cost**.
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo build --filter=docs
+## Features
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo build --filter=docs
-yarn exec turbo build --filter=docs
-pnpm exec turbo build --filter=docs
-```
+- ⚡ **Zero Runtime Overhead** - Compiles to static strings at build time
+- 🎯 **Framework Agnostic** - Works with React, Vue, Svelte, Solid, and any Vite-compatible framework
+- 🚀 **Performance First** - Fast regex pre-filtering and optimized AST parsing
+- 📦 **Type Safe** - Full TypeScript support with proper type definitions
+- 🔥 **HMR Support** - Fast Hot Module Replacement during development
 
-### Develop
+## Project Structure
 
-To develop all apps and packages, run the following command:
+This is a Turborepo monorepo containing:
 
-```
-cd my-turborepo
+### Packages
 
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev
+- `@repo/vite-plugin` - Main Vite plugin (coming soon)
+- `tw-classname` - Type definitions package (coming soon)
+- `@repo/ui` - Shared React component library
+- `@repo/eslint-config` - Shared ESLint configurations
+- `@repo/typescript-config` - Shared TypeScript configurations
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev
-yarn exec turbo dev
-pnpm exec turbo dev
-```
+### Apps
 
-You can develop a specific package by using a [filter](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters):
+- `docs` - Documentation site built with Next.js
 
-```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo dev --filter=web
+## Getting Started
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo dev --filter=web
-yarn exec turbo dev --filter=web
-pnpm exec turbo dev --filter=web
-```
+### Prerequisites
 
-### Remote Caching
+- Node.js >= 18
+- pnpm 9.0.0 (required)
 
-> [!TIP]
-> Vercel Remote Cache is free for all plans. Get started today at [vercel.com](https://vercel.com/signup?/signup?utm_source=remote-cache-sdk&utm_campaign=free_remote_cache).
+### Installation
 
-Turborepo can use a technique known as [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
+```bash
+# Install dependencies
+pnpm install
 
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup?utm_source=turborepo-examples), then enter the following commands:
+# Start development
+pnpm dev
 
-```
-cd my-turborepo
-
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo login
-
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo login
-yarn exec turbo login
-pnpm exec turbo login
+# Build all packages
+pnpm build
 ```
 
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
+### Development Commands
 
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
+```bash
+# Start all apps in dev mode
+pnpm dev
 
+# Start specific app
+turbo dev --filter=docs
+
+# Run type checking
+pnpm check-types
+
+# Lint all packages
+pnpm lint
+
+# Format code
+pnpm format
 ```
-# With [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation) installed (recommended)
-turbo link
 
-# Without [global `turbo`](https://turborepo.dev/docs/getting-started/installation#global-installation), use your package manager
-npx turbo link
-yarn exec turbo link
-pnpm exec turbo link
+## How It Works
+
+1. **Development**: Write `tw()` calls with breakpoint-grouped classes
+2. **Build Time**: Vite plugin detects and transforms `tw()` calls via AST
+3. **Production**: Output contains only static Tailwind class strings
+4. **Result**: Zero runtime dependencies, identical bundle size to manual strings
+
+## Tech Stack
+
+- **Build System**: Turborepo with pnpm workspaces
+- **Language**: TypeScript 5.9.2 (strict mode)
+- **Plugin Target**: Vite 7.x
+- **Testing**: Vitest
+- **Code Quality**: ESLint 9.x + Prettier 3.7.4
+
+## Development Roadmap
+
+### Phase 1: Core Plugin (Weeks 1-3)
+- [ ] Basic Vite plugin skeleton
+- [ ] Regex-based transformation (MVP)
+- [ ] AST-based transformation with Babel
+- [ ] TypeScript definitions package
+- [ ] Unit tests with Vitest
+
+### Phase 2: Framework Integration (Week 4)
+- [ ] React example project
+- [ ] Vue 3 example project
+- [ ] Svelte example project
+- [ ] Integration tests
+
+### Phase 3: Developer Experience (Week 5)
+- [ ] Debug mode and error handling
+- [ ] Performance optimization
+- [ ] Documentation site
+- [ ] Migration guides
+
+### Phase 4: Release (Week 6)
+- [ ] Beta testing
+- [ ] Final polish
+- [ ] npm publication
+
+## Contributing
+
+Contributions are welcome! Please read our contributing guidelines before submitting PRs.
+
+```bash
+# Fork and clone the repository
+git clone https://github.com/yourusername/tw-classname.git
+
+# Install dependencies
+pnpm install
+
+# Create a feature branch
+git checkout -b feature/your-feature
+
+# Make your changes and test
+pnpm test
+pnpm lint
+
+# Submit a PR
 ```
 
-## Useful Links
+## Performance Targets
 
-Learn more about the power of Turborepo:
+- **Transform Time**: <5ms per file
+- **HMR Updates**: <50ms
+- **Build Time Impact**: <5% increase
+- **Production Bundle**: 0 KB (compiled away)
 
-- [Tasks](https://turborepo.dev/docs/crafting-your-repository/running-tasks)
-- [Caching](https://turborepo.dev/docs/crafting-your-repository/caching)
-- [Remote Caching](https://turborepo.dev/docs/core-concepts/remote-caching)
-- [Filtering](https://turborepo.dev/docs/crafting-your-repository/running-tasks#using-filters)
-- [Configuration Options](https://turborepo.dev/docs/reference/configuration)
-- [CLI Usage](https://turborepo.dev/docs/reference/command-line-reference)
+## License
+
+MIT
+
+## Links
+
+- [Documentation](./PROJECT-DETAILS.md) - Detailed project documentation
+- [Turborepo Docs](https://turborepo.dev) - Learn about Turborepo
+- [Vite Plugin API](https://vitejs.dev/guide/api-plugin.html) - Vite plugin development
+- [Tailwind CSS](https://tailwindcss.com) - Utility-first CSS framework
+
+---
+
+**Status**: 🚧 In Development
+
+**Version**: 0.1.0-alpha
+
+**Last Updated**: February 6, 2026
